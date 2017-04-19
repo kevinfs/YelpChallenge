@@ -34,4 +34,4 @@ user_basic.registerTempTable("user_basic")
 
 review_by_user = review_basic.join(user_basic, review_basic.user_id == user_basic.user_id)
 
-
+review_by_user.show()
