@@ -1,5 +1,6 @@
 from pyspark import SparkContext
 from pyspark.sql import SQLContext
+from pyspark.sql import functions
 
 
 #Creation of the spark context
@@ -50,6 +51,35 @@ social_reviews = social_reviews.filter(social_reviews["review_date"] > social_re
 social_reviews.cache()
 social_reviews.persist()
 social_reviews.show()
+
+social_groupby_business = social_reviews.groupBy(social_reviews.user_id, social_reviews.business_id).avg('friend_stars')
+
+social_groupby_business.cache()
+social_groupby_business.persist()
+social_groupby_business.show()
+
+social_groupby_business1 = social_reviews.select('user_id', 'business_id', 'stars').withColumnRenamed('user_id', 'uid').withColumnRenamed('business_id', 'bid')
+
+social_groupby_business1.cache()
+social_groupby_business1.persist()
+social_groupby_business1.show()
+
+social_groupby_business2 = social_groupby_business.join(social_groupby_business1, (social_groupby_business.user_id == social_groupby_business1.uid) & (social_groupby_business.business_id == social_groupby_business1.bid)).drop('uid').drop('bid').distinct()
+social_groupby_business2.persist()
+social_groupby_business2.show()
+
+
+social_gap = social_groupby_business2.withColumn("friend_stars_gap", functions.abs(social_groupby_business2.stars-social_groupby_business2["avg(friend_stars)"]))
+
+social_gap.cache()
+social_gap.persist()
+social_gap.show()
+
+social_groupby_users = social_gap.groupBy(social_gap.user_id).avg('friend_stars_gap').alias("social_gap_average")
+
+social_groupby_users.cache()
+social_groupby_users.persist()
+social_groupby_users.show()
 
 # user_and_its_friends = user_reviews.join(friends, user_reviews.user_id == friends.uid).drop('uid')
 # user_and_its_friends.show()
