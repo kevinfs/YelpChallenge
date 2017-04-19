@@ -28,7 +28,10 @@ business_basic = sqlContext.sql("SELECT business_id, stars FROM business")
 review_basic = sqlContext.sql("SELECT review_id,user_id, business_id, stars, date FROM review")
 user_basic = sqlContext.sql("SELECT user_id, average_stars FROM user")
 
-business_basic.show()
+business_basic.registerTempTable("business_basic")
+review_basic.registerTempTable("review_basic")
+user_basic.registerTempTable("user_basic")
 
-sc.stop()
+review_by_user = review_basic.join(user_basic, review_basic.user_id == user_basic.user_id)
+
 
