@@ -10,6 +10,13 @@ business = sqlContext.read.json("../yelp_dataset/yelp_academic_dataset_business.
 review = sqlContext.read.json("../yelp_dataset/yelp_academic_dataset_review.json")
 user = sqlContext.read.json("../yelp_dataset/yelp_academic_dataset_user.json")
 
+# friends = sqlContext.read.csv("../yelp_dataset/user-graph.txt")
+formatter = 'com.databricks.spark.csv'
+friends = sqlContext.read.format(formatter).options(delimiter=' ', \
+    header='false', inferSchema=True) \
+    .load('../yelp_dataset/user-graph.txt').withColumnRenamed( \
+    '_c0', 'user_id').withColumnRenamed('_c1', 'friend_id')
+
 business.cache()
 review.cache()
 user.cache()
@@ -28,10 +35,14 @@ business_basic = sqlContext.sql("SELECT business_id, stars FROM business")
 review_basic = sqlContext.sql("SELECT review_id,user_id, business_id, stars, date FROM review")
 user_basic = sqlContext.sql("SELECT user_id, average_stars FROM user")
 
-business_basic.registerTempTable("business_basic")
-review_basic.registerTempTable("review_basic")
-user_basic.registerTempTable("user_basic")
-
 review_by_user = review_basic.join(user_basic, review_basic.user_id == user_basic.user_id)
 
 review_by_user.show()
+
+friends_reviews = friends.join(review_by_user, friends.friend_id == review_by_user.user_id)
+
+friends_reviews.show()
+
+
+
+
