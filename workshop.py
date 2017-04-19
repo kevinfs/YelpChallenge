@@ -46,6 +46,9 @@ friend_reviews.show()
 # Join everything
 social_reviews = user_reviews.join(friends, user_reviews.user_id == friends.uid).join(friend_reviews, friends.fid == friend_reviews.friend_id).drop('uid', 'fid')
 social_reviews = social_reviews.filter(social_reviews["business_id"] == social_reviews["friend_business_id"])
+social_reviews = social_reviews.filter(social_reviews["review_date"] > social_reviews["friend_review_date"])
+social_reviews.cache()
+social_reviews.persist()
 social_reviews.show()
 
 # user_and_its_friends = user_reviews.join(friends, user_reviews.user_id == friends.uid).drop('uid')
