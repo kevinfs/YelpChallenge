@@ -10,7 +10,7 @@ if __name__ == "__main__":
 			data.append(json.loads(line))
 	
 	#tmpStr = '{"type": "Feature","geometry": {"type": "Point","coordinates": [125.6, 10.1]},"properties": {"name": "Dinagat Islands"}}'
-	with open('yelp_dataset/user-graph.json', 'w') as outfile:
+	with open('yelp_dataset/user-graph.txt', 'w') as outfile:
 
 		for o in data:
 			
