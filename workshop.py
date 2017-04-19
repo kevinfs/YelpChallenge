@@ -40,11 +40,12 @@ user_reviews = review_basic.join(user_basic, review_basic.rid == user_basic.user
 user_reviews.show()
 
 # A friend and its reviews
-friend_reviews = user_reviews.withColumnRenamed('user_id', 'friend_id')
+friend_reviews = user_reviews.withColumnRenamed('user_id', 'friend_id').withColumnRenamed('review_date', 'friend_review_date').withColumnRenamed('stars', 'friend_stars').withColumnRenamed('business_id', 'friend_business_id')
 friend_reviews.show()
 
 # Join everything
 social_reviews = user_reviews.join(friends, user_reviews.user_id == friends.uid).join(friend_reviews, friends.fid == friend_reviews.friend_id).drop('uid', 'fid')
+social_reviews = social_reviews.filter(social_reviews["business_id"] == social_reviews["friend_business_id"])
 social_reviews.show()
 
 # user_and_its_friends = user_reviews.join(friends, user_reviews.user_id == friends.uid).drop('uid')
