@@ -6,11 +6,20 @@ from pyspark.sql import SQLContext
 sc = SparkContext(appName="Big Data Workshop")
 sqlContext = SQLContext(sc)
 
-user = sqlContext.read.json("yelp_academic_dataset_tip.json")
+business = sqlContext.read.json("../yelp_dataset/yelp_academic_dataset_business.json")
+review = sqlContext.read.json("../yelp_dataset/yelp_academic_dataset_review.json")
+user = sqlContext.read.json("../yelp_dataset/yelp_academic_dataset_user.json")
 
+business.cache()
+
+business.show()
+review.show()
 user.show()
 
+business.registerTempTable("business")
+review.registerTempTable("review")
 user.registerTempTable("user")
+
 
 sc.stop()
 
