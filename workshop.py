@@ -69,7 +69,7 @@ social_groupby_business2.persist()
 social_groupby_business2.show()
 
 
-social_gap = social_groupby_business2.withColumn("friend_stars_gap", functions.abs(social_groupby_business2.stars-social_groupby_business2["avg(friend_stars)"]))
+social_gap = social_groupby_business2.withColumn("friend_stars_gap", social_groupby_business2.stars-social_groupby_business2["avg(friend_stars)"])
 
 social_gap.cache()
 social_gap.persist()
@@ -80,6 +80,20 @@ social_groupby_users = social_gap.groupBy(social_gap.user_id).avg('friend_stars_
 social_groupby_users.cache()
 social_groupby_users.persist()
 social_groupby_users.show()
+
+social_groupby_users_rounded = social_groupby_users.withColumn("rounded", functions.round("avg(friend_stars_gap)"))
+
+social_groupby_users_rounded.cache()
+social_groupby_users_rounded.persist()
+social_groupby_users_rounded.show()
+
+final_result = social_groupby_users_rounded.groupBy("rounded").count()
+
+final_result.cache()
+final_result.persist()
+final_result.show()
+
+# final_result.write.format("com.databricks.spark.csv").save("final_result")
 
 # user_and_its_friends = user_reviews.join(friends, user_reviews.user_id == friends.uid).drop('uid')
 # user_and_its_friends.show()
